@@ -158,32 +158,17 @@ def processing(input_dir, output_dir, model):
             print(dir + ' already checked')
         else:
             os.mkdir(output_subdir)
-            files = os.listdir(subdir)
-            with tqdm(total=len(files), desc = dir) as pbar:
-                for file in files:
-                    if os.path.splitext(file)[1] == '.mp4':
-                        path_0 = os.path.join(subdir, file)
-                        path_1 = os.path.splitext(path_0)[0] + '_2DFull.npy'
-                        path_2 = os.path.splitext(path_0)[0] + '_BB.npy'
-                        output_path = os.path.join(output_subdir, file)
-                        if is_one_face_moving(path_2):
-                            try:
-                                d =audio_processing(path_0, model)
-                                if d:
-                                    video_processing(path_0, path_1, path_2, output_path, d, 96)
-                                pbar.update(1)
-                            except cv2.error as e:
-                                continue
-                            except AttributeError:
-                                continue
-                            except KeyError:
-                                continue
-                            except FFmpegError:
-                                continue
-                            except FileNotFoundError:
-                                continue
-                        else:
-                            continue
+            mp4s = glob.glob(os.path.join(subdir,'*.mp4'))
+            with tqdm.tqdm(total=len(mp4s), desc = dir) as pbar:
+                for mp4 in mp4s:
+                    path_0 = mp4
+                    path_1 = os.path.splitext(path_0)[0] + '_2DFull.npy'
+                    path_2 = os.path.splitext(path_0)[0] + '_BB.npy'
+                    output_path = os.path.join(output_subdir, os.path.split(mp4)[1])
+                    result = audio_processing(path_0, model)
+                    video_processing(path_0, path_1, path_2, output_path, result, 96)
+                    landmarks_for_words(result, path_1, output_path)
+                    pbar.update(1)
             
 
 def width_of_lip_region(landmarks_path, bb_path):
@@ -206,4 +191,27 @@ def stat_counting(input_dir, current_list):
                     path_1 = os.path.splitext(path_0)[0] + '_2DFull.npy'
                     path_2 = os.path.splitext(path_0)[0] + '_BB.npy'
                     current_list.append(width_of_lip_region(path_1, path_2))
+            pbar.update(1)
+            
+def create_less_29_word_dir(input_dir, output_dir):
+    dir_list = os.listdir(input_dir)
+    with tqdm(total=len(dir_list)) as pbar:
+        for dir in dir_list:
+            subdir = os.path.join(input_dir, dir)
+            files = os.listdir(subdir)
+            for file in files:
+                if os.path.splitext(file)[1] == '.mp4':
+                    cap = cv2.VideoCapture(os.path.join(subdir, file))
+                    length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+                    if length < 30:
+                        word = os.path.splitext(file.split('_')[-1])[0]
+                        word_dir_path = os.path.join(output_dir, word)
+                        if os.path.exists(word_dir_path):
+                            word_subdir_path = os.path.join(word_dir_path, 'train')
+                            shutil.copy(os.path.join(subdir, file), os.path.join(word_subdir_path, f'{word}{len(os.listdir(word_subdir_path))}.mp4'))
+                        else:
+                            os.mkdir(word_dir_path)
+                            word_subdir_path = os.path.join(word_dir_path, 'train')
+                            os.mkdir(word_subdir_path)
+                            shutil.copy(os.path.join(subdir, file), os.path.join(word_subdir_path, f'{word}{len(os.listdir(word_subdir_path))}.mp4'))
             pbar.update(1)
