@@ -1,0 +1,49 @@
+title = "LipReading PyTorch"
+
+[general]
+usecudnn = true
+usecudnnbenchmark = true
+gpuid = "0"
+loadpretrainedmodel = true
+random_seed = 55
+pretrainedmodelpath = 'DenseNet3D/weights/lrw1000_34.pt'
+
+[input]
+batchsize = 16
+numworkers = 8
+shuffle = true
+
+[model]
+type = "Finetune-label"
+inputdim = 256
+hiddendim = 256
+numclasses = 100
+numlstms = 2
+
+[training]
+train = true
+epochs = 10
+startepoch = 0
+statsfrequency = 4000
+data_root = 'balanced_300_new'
+index_root = 'top_300_words.txt'
+padding = 29
+learningrate = 1e-4
+momentum = 0.9
+weightdecay = 0.003
+save_prefix = "DenseNet3D/weights/top_86"
+
+[validation]
+validate = true
+data_root = 'balanced_300_new'
+index_root = 'LRW1000_Public/info/val_1000.txt'
+padding = 29
+saveaccuracy = true
+
+
+[test]
+test = false
+data_root = 'dataset/prepared_data'
+index_root = 'LRW1000_Public/info/tst_1000.txt'
+padding = 29
+saveaccuracy = true
