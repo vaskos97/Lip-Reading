@@ -4,7 +4,7 @@ title = "LipReading PyTorch"
 usecudnn = true
 usecudnnbenchmark = true
 gpuid = "0"
-loadpretrainedmodel = true
+loadpretrainedmodel = false
 random_seed = 55
 pretrainedmodelpath = 'DenseNet3D/weights/balanced_300_2d+1d_00000008.pt'
 
