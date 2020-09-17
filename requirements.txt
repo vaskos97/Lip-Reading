@@ -1,0 +1,9 @@
+imutils 
+pafy 
+youtube-dl 
+face-alignment 
+facenet-pytorch 
+sk-video 
+vosk
+ffmpeg-python
+toml
