@@ -23,12 +23,12 @@ numlstms = 2
 [training]
 train = true
 epochs = 20
-startepoch = 9
+startepoch = 0
 statsfrequency = 4000
 data_root = 'balanced_300_new'
 index_root = 'top_300_words.txt'
 padding = 29
-learningrate = 5e-5
+learningrate = 1e-4
 momentum = 0.9
 weightdecay = 0.003
 save_prefix = "DenseNet3D/weights/balanced_300_2d+1d"
