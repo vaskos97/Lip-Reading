@@ -7,7 +7,7 @@ This repo contains the code for two lipreading model: DenseNet3D and model with 
 
 ## How to test
 
-* To evaluate on LRW-structure dataset:
+To evaluate on LRW-structure dataset:
 
 ```Shell
 !python main.py options_lip.toml 
